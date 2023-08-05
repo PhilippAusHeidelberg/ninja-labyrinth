@@ -1,6 +1,6 @@
 statusbars.onStatusReached(StatusBarKind.Health, statusbars.StatusComparison.LTE, statusbars.ComparisonType.Percentage, 0, function (status) {
     game.splash("gestorben")
-    statusbar.value = 100
+    game.reset()
 })
 controller.anyButton.onEvent(ControllerButtonEvent.Pressed, function () {
     if (mySprite.overlapsWith(mySprite2)) {
@@ -153,20 +153,20 @@ forever(function () {
     }
 })
 forever(function () {
-    if (Schlag == 1 && mySprite.overlapsWith(mySprite6)) {
-        tiles.placeOnTile(mySprite6, tiles.getTileLocation(7, 4))
-    }
-})
-forever(function () {
-    if (Schlag == 1 && mySprite.overlapsWith(mySprite4)) {
-        tiles.placeOnTile(mySprite4, tiles.getTileLocation(7, 4))
-    }
-})
-forever(function () {
     if (Schlag == 0 && mySprite.overlapsWith(mySprite6)) {
         tiles.placeOnTile(mySprite, tiles.getTileLocation(7, 4))
         statusbar.value += -40
         tiles.placeOnRandomTile(mySprite6, assets.tile`transparency16`)
+    }
+})
+forever(function () {
+    if (Schlag == 1 && mySprite.overlapsWith(mySprite6)) {
+        tiles.placeOnRandomTile(mySprite6, assets.tile`transparency16`)
+    }
+})
+forever(function () {
+    if (Schlag == 1 && mySprite.overlapsWith(mySprite4)) {
+        tiles.placeOnRandomTile(mySprite4, assets.tile`transparency16`)
     }
 })
 forever(function () {
