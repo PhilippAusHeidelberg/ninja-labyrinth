@@ -1,25 +1,28 @@
-scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function (sprite, location) {
-    tiles.placeOnTile(mySprite, tiles.getTileLocation(7, 4))
-    info.changeLifeBy(-1)
+statusbars.onStatusReached(StatusBarKind.Health, statusbars.StatusComparison.LTE, statusbars.ComparisonType.Percentage, 0, function (status) {
+    game.splash("gestorben")
+    statusbar.value = 100
 })
 controller.anyButton.onEvent(ControllerButtonEvent.Pressed, function () {
     if (mySprite.overlapsWith(mySprite2)) {
         tiles.placeOnTile(mySprite3, tiles.getTileLocation(5, 4))
     }
     if (mySprite.overlapsWith(mySprite3)) {
-        tiles.placeOnTile(mySprite3, tiles.getTileLocation(0, 0))
+        tiles.placeOnTile(mySprite3, tiles.getTileLocation(-1, -1))
+        statusbar.value = 100
         for (let index = 0; index < 100; index++) {
             mySprite3.startEffect(effects.disintegrate, 5000)
         }
-        info.changeLifeBy(1)
     }
 })
 let Schlag = 0
+let schwert = 0
 let mySprite3: Sprite = null
 let mySprite2: Sprite = null
 let mySprite: Sprite = null
+let statusbar: StatusBarSprite = null
 scene.setBackgroundColor(6)
 tiles.setCurrentTilemap(tilemap`Level2`)
+statusbar = statusbars.create(20, 4, StatusBarKind.Health)
 mySprite = sprites.create(img`
     . . . . . . f f f f . . . . . . 
     . . . . f f f 2 2 f f f . . . . 
@@ -136,20 +139,38 @@ tiles.placeOnTile(mySprite3, tiles.getTileLocation(0, 0))
 tiles.placeOnRandomTile(mySprite4, assets.tile`transparency16`)
 tiles.placeOnTile(mySprite5, tiles.getTileLocation(1, 10))
 tiles.placeOnRandomTile(mySprite, assets.tile`transparency16`)
-mySprite6.setVelocity(10, 10)
+statusbar.attachToSprite(mySprite)
 mySprite4.follow(mySprite, 10)
-info.setLife(3)
+mySprite6.follow(mySprite, 10)
 controller.moveSprite(mySprite, 70, 70)
 tiles.placeOnTile(mySprite, tiles.getTileLocation(7, 4))
 scene.cameraFollowSprite(mySprite)
 tiles.setTileAt(tiles.getTileLocation(0, 0), assets.tile`transparency16`)
 forever(function () {
-    if (mySprite.overlapsWith(mySprite4) && controller.B.isPressed()) {
-        tiles.placeOnRandomTile(mySprite4, assets.tile`transparency16`)
+    if (mySprite.overlapsWith(mySprite5) && controller.A.isPressed()) {
+        schwert = 1
+        tiles.placeOnTile(mySprite5, tiles.getTileLocation(-1, -1))
     }
 })
 forever(function () {
-    if (true && controller.B.isPressed()) {
+    if (Schlag == 1 && mySprite.overlapsWith(mySprite6)) {
+        tiles.placeOnTile(mySprite6, tiles.getTileLocation(7, 4))
+    }
+})
+forever(function () {
+    if (Schlag == 1 && mySprite.overlapsWith(mySprite4)) {
+        tiles.placeOnTile(mySprite4, tiles.getTileLocation(7, 4))
+    }
+})
+forever(function () {
+    if (Schlag == 0 && mySprite.overlapsWith(mySprite6)) {
+        tiles.placeOnTile(mySprite, tiles.getTileLocation(7, 4))
+        statusbar.value += -40
+        tiles.placeOnRandomTile(mySprite6, assets.tile`transparency16`)
+    }
+})
+forever(function () {
+    if (schwert == 1 && controller.B.isPressed()) {
         Schlag = 1
         mySprite.setImage(img`
             ..............ffffff....
@@ -337,22 +358,7 @@ forever(function () {
 forever(function () {
     if (Schlag == 0 && mySprite.overlapsWith(mySprite4)) {
         tiles.placeOnTile(mySprite, tiles.getTileLocation(7, 4))
-        info.changeLifeBy(-1)
-    }
-})
-forever(function () {
-    if (Schlag == 0 && mySprite.overlapsWith(mySprite6)) {
-        tiles.placeOnTile(mySprite, tiles.getTileLocation(7, 4))
-        info.changeLifeBy(-1)
-    }
-})
-forever(function () {
-    if (Schlag == 1 && mySprite.overlapsWith(mySprite4)) {
-        tiles.placeOnTile(mySprite4, tiles.getTileLocation(7, 4))
-    }
-})
-forever(function () {
-    if (Schlag == 1 && mySprite.overlapsWith(mySprite6)) {
-        tiles.placeOnTile(mySprite4, tiles.getTileLocation(7, 4))
+        statusbar.value += -40
+        tiles.placeOnRandomTile(mySprite4, assets.tile`transparency16`)
     }
 })
