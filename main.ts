@@ -1,17 +1,41 @@
-statusbars.onStatusReached(StatusBarKind.Health, statusbars.StatusComparison.LTE, statusbars.ComparisonType.Percentage, 0, function (status) {
-    game.splash("gestorben")
-    game.reset()
-})
+namespace SpriteKind {
+    export const Boss_Leben = SpriteKind.create()
+}
+namespace StatusBarKind {
+    export const Boss_Leben = StatusBarKind.create()
+}
 controller.anyButton.onEvent(ControllerButtonEvent.Pressed, function () {
     if (mySprite.overlapsWith(mySprite2)) {
         tiles.placeOnTile(mySprite3, tiles.getTileLocation(5, 4))
     }
     if (mySprite.overlapsWith(mySprite3)) {
         tiles.placeOnTile(mySprite3, tiles.getTileLocation(-1, -1))
-        statusbar.value = 100
+        info.changeLifeBy(1)
         for (let index = 0; index < 100; index++) {
             mySprite3.startEffect(effects.disintegrate, 5000)
         }
+    }
+})
+statusbars.onStatusReached(StatusBarKind.Health, statusbars.StatusComparison.LTE, statusbars.ComparisonType.Percentage, 0, function (status) {
+    if (info.life() == 0) {
+        game.splash("gesdorben")
+        info.changeScoreBy(0)
+        game.reset()
+    }
+    if (info.life() == 1) {
+        game.splash("gewonnen")
+        info.changeScoreBy(1)
+        game.reset()
+    }
+    if (info.life() == 2) {
+        game.splash("gewonnen")
+        info.changeScoreBy(2)
+        game.reset()
+    }
+    if (info.life() == 3) {
+        game.splash("gewonnen")
+        info.changeScoreBy(3)
+        game.reset()
     }
 })
 let Schlag = 0
@@ -19,10 +43,9 @@ let schwert = 0
 let mySprite3: Sprite = null
 let mySprite2: Sprite = null
 let mySprite: Sprite = null
-let statusbar: StatusBarSprite = null
 scene.setBackgroundColor(6)
 tiles.setCurrentTilemap(tilemap`Level2`)
-statusbar = statusbars.create(20, 4, StatusBarKind.Health)
+game.splash("MIT DER LERTASTE SAMELT MAN DINGE AUF UND LEGT SCHALTER UM.MIT DER EINGABETSTE BENUTZT MAN SEIN SCHWERT.")
 mySprite = sprites.create(img`
     . . . . . . f f f f . . . . . . 
     . . . . f f f 2 2 f f f . . . . 
@@ -89,7 +112,7 @@ let mySprite4 = sprites.create(img`
     ........................
     ........................
     ........................
-    `, SpriteKind.Player)
+    `, SpriteKind.Enemy)
 let mySprite5 = sprites.create(img`
     1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
     1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
@@ -133,15 +156,72 @@ let mySprite6 = sprites.create(img`
     ........................
     ........................
     ........................
-    `, SpriteKind.Player)
+    `, SpriteKind.Enemy)
+let mySprite7 = sprites.create(img`
+    ........................
+    ........................
+    ........................
+    ........................
+    ..........ffff..........
+    ........ff1111ff........
+    .......fb111111bf.......
+    .......f11111111f.......
+    ......fd11111111df......
+    ......fd11111111df......
+    ......fddd1111dddf......
+    ......fbdbfddfbdbf......
+    ......fcdcf11fcdcf......
+    .......fb111111bf.......
+    ......fffcdb1bdffff.....
+    ....fc111cbfbfc111cf....
+    ....f1b1b1ffff1b1b1f....
+    ....fbfbffffffbfbfbf....
+    .........ffffff.........
+    ...........fff..........
+    ........................
+    ........................
+    ........................
+    ........................
+    `, SpriteKind.Enemy)
+let statusbar2 = statusbars.create(20, 4, StatusBarKind.Health)
+let mySprite8 = sprites.create(img`
+    ....55..555.555.555.....
+    ....55..555.555.555.....
+    ..555555555555555555....
+    ..555555555555555555....
+    ..555555555555555555....
+    ..555555555555555555....
+    ..555555555555555555....
+    .....fbb11111111bbf.....
+    .....f111111111111f.....
+    ....fd111111111111df....
+    ....fd111111111111df....
+    ....fdddd111111ddddf....
+    ....fdddd111111ddddf....
+    ....fbdd222dd222ddbf....
+    ....fcdd22211222ddcf....
+    .....fbb11111111bbf.....
+    ....ffffcddb1bbdffffff..
+    .fcc1111cbbfbffc1111ccf.
+    .fcc1111cbbfbffc1111ccf.
+    .f11b1bb1ffffff1bb1b11f.
+    .fbbfbfffffffffbffbfbbf.
+    ........ffffffff........
+    ...........ffff.........
+    ........................
+    `, SpriteKind.Boss_Leben)
+statusbar2.attachToSprite(mySprite8, 0, 0)
+info.setLife(3)
 tiles.placeOnTile(mySprite2, tiles.getTileLocation(4, 3))
 tiles.placeOnTile(mySprite3, tiles.getTileLocation(0, 0))
 tiles.placeOnRandomTile(mySprite4, assets.tile`transparency16`)
 tiles.placeOnTile(mySprite5, tiles.getTileLocation(1, 10))
 tiles.placeOnRandomTile(mySprite, assets.tile`transparency16`)
-statusbar.attachToSprite(mySprite)
+tiles.placeOnRandomTile(mySprite7, assets.tile`transparency16`)
+mySprite7.follow(mySprite, 10)
 mySprite4.follow(mySprite, 10)
 mySprite6.follow(mySprite, 10)
+mySprite8.follow(mySprite, 10)
 controller.moveSprite(mySprite, 70, 70)
 tiles.placeOnTile(mySprite, tiles.getTileLocation(7, 4))
 scene.cameraFollowSprite(mySprite)
@@ -153,10 +233,8 @@ forever(function () {
     }
 })
 forever(function () {
-    if (Schlag == 0 && mySprite.overlapsWith(mySprite6)) {
-        tiles.placeOnTile(mySprite, tiles.getTileLocation(7, 4))
-        statusbar.value += -40
-        tiles.placeOnRandomTile(mySprite6, assets.tile`transparency16`)
+    if (Schlag == 1 && mySprite.overlapsWith(mySprite4)) {
+        tiles.placeOnRandomTile(mySprite4, assets.tile`transparency16`)
     }
 })
 forever(function () {
@@ -165,8 +243,42 @@ forever(function () {
     }
 })
 forever(function () {
-    if (Schlag == 1 && mySprite.overlapsWith(mySprite4)) {
+    if (Schlag == 1 && mySprite.overlapsWith(mySprite8)) {
+        tiles.placeOnRandomTile(mySprite8, assets.tile`transparency16`)
+        statusbar2.value += -30
+    }
+})
+forever(function () {
+    if (Schlag == 1 && mySprite.overlapsWith(mySprite7)) {
+        tiles.placeOnRandomTile(mySprite7, assets.tile`transparency16`)
+    }
+})
+forever(function () {
+    if (Schlag == 0 && mySprite.overlapsWith(mySprite6)) {
+        tiles.placeOnTile(mySprite, tiles.getTileLocation(7, 4))
+        tiles.placeOnRandomTile(mySprite6, assets.tile`transparency16`)
+        info.changeLifeBy(-1)
+    }
+})
+forever(function () {
+    if (Schlag == 0 && mySprite.overlapsWith(mySprite4)) {
+        tiles.placeOnTile(mySprite, tiles.getTileLocation(7, 4))
         tiles.placeOnRandomTile(mySprite4, assets.tile`transparency16`)
+        info.changeLifeBy(-1)
+    }
+})
+forever(function () {
+    if (Schlag == 0 && mySprite.overlapsWith(mySprite7)) {
+        tiles.placeOnTile(mySprite, tiles.getTileLocation(7, 4))
+        tiles.placeOnRandomTile(mySprite7, assets.tile`transparency16`)
+        info.changeLifeBy(-1)
+    }
+})
+forever(function () {
+    if (Schlag == 0 && mySprite.overlapsWith(mySprite8)) {
+        tiles.placeOnTile(mySprite, tiles.getTileLocation(7, 4))
+        tiles.placeOnRandomTile(mySprite8, assets.tile`transparency16`)
+        info.changeLifeBy(-1)
     }
 })
 forever(function () {
@@ -353,12 +465,5 @@ forever(function () {
             . . . . . f f . . f f . . . . . 
             `)
         Schlag = 0
-    }
-})
-forever(function () {
-    if (Schlag == 0 && mySprite.overlapsWith(mySprite4)) {
-        tiles.placeOnTile(mySprite, tiles.getTileLocation(7, 4))
-        statusbar.value += -40
-        tiles.placeOnRandomTile(mySprite4, assets.tile`transparency16`)
     }
 })
