@@ -1,9 +1,10 @@
 {
-    "name": "Ninja Labyrinth",
+    "name": "der Superninja",
     "description": "",
     "dependencies": {
         "device": "*",
-        "pxt-status-bar": "github:jwunderl/pxt-status-bar#v0.4.2"
+        "pxt-status-bar": "github:jwunderl/pxt-status-bar#v0.4.2",
+        "darts": "*"
     },
     "files": [
         "main.blocks",
